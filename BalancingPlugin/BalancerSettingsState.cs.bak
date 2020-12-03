@@ -1,0 +1,100 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ComponentModel;
+
+namespace NAMESPACE-HERE
+{
+    /// <summary>
+    /// This is the "Model" class.
+    /// It exposes any settings that the balancer wishes to show to the user as properties.
+    /// 
+    /// This class will be automatically serialized for us by the system, so we must mark it [Serializable].
+    /// </summary>
+    [Serializable()]
+    class BalancerSettingsState
+        : INotifyPropertyChanged
+    {
+
+        private int _version;
+        /// <summary>
+        /// The version ensures that we are not looking at an older or newer settings state.
+        /// </summary>
+        public int Version
+        {
+            get
+            {
+                return _version;
+            }
+            set
+            {
+                _version = value;
+
+                // We must call OnChanged whenever something changes a property in order to notify the UI of the update.
+                // If one property depends on another, this ensures a consistent UI experience.
+                OnChanged();
+            }
+        }
+
+        /// <summary>
+        /// Our settings properties follow.
+        /// </summary>
+        #region Settings properties
+
+        private bool _sampleProperty1;
+        /// <summary>
+        /// A sample settings property that the user can change.
+        /// </summary>
+        public bool SampleProperty1
+        {
+            get 
+            {
+                return _sampleProperty1;
+            }
+            set 
+            {
+                _sampleProperty1 = value;
+                OnChanged();
+            }
+        }
+
+        // TODO: Add more settings properties here...
+
+        #endregion
+
+        /// <summary>
+        /// This returns a new default settings instance.
+        /// </summary>
+        public static BalancerSettingsState Default
+        {
+            get
+            {
+                return new BalancerSettingsState { Version = 1, SampleProperty1 = true }; ;
+            }
+        }
+
+        /// <summary>
+        /// This event informs the UI of property changes.
+        /// It must not be serialized.
+        /// </summary>
+        [field: NonSerialized()]
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Go through all the properties and update the UI.
+        /// </summary>
+        private void OnChanged()
+        {
+            if (PropertyChanged != null)
+            {
+                var props = this.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                foreach (var prop in props)
+                {
+                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs(prop.Name));
+                }
+            }
+        }
+
+    }
+}

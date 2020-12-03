@@ -1,0 +1,16 @@
+Change Log
+==========
+
+Revision 4
+----------
+* Refactored template to support version upgrading.
+* Added Upgrade.cmd.
+* Plug-ins will now be built in a unique namespace based on the plug-in name.
+
+Revision 3
+----------
+* Added support for StableBit DrivePool 2.X.
+
+Revision 1
+----------
+* Initial release.

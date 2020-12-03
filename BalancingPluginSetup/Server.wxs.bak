@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='Windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+     xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'
+     xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension">
+
+  <?define Name="BALANCER-NAME-HERE" ?>         <!-- Example: Disk Space Equalizer -->
+  <?define AssemblyName="CJManca.AllInOnePlugin" ?> <!-- Format:  JaneDoe.DiskSpaceEqualizerPlugin -->
+  <?define Manufacturer="C.J. Manca" ?>        <!-- Example: Jane Doe -->
+  <?define ProductVersion="1.0.1" ?>
+  <?define ProductCode="42eb56a9-d2dc-4653-813f-c4f81bd9b30c" ?>
+  <?define UpgradeCode="09fe7e1c-c667-496f-acbb-a24126b77df3" ?>
+
+  <Product
+    Name='StableBit DrivePool Plug-in - $(var.Name)'
+    Id='$(var.ProductCode)'
+    UpgradeCode='$(var.UpgradeCode)'
+    Language='1033'
+    Codepage='1252'
+    Version='$(var.ProductVersion)'
+    Manufacturer='$(var.Manufacturer)'>
+
+    <Package
+      Id='*'
+      Keywords='Installer'
+      Platform="x64"
+      Description="StableBit DrivePool Balancing Plug-in Installer" Comments='The Server Add-in for the StableBit DrivePool balancing plug-in'
+      Manufacturer='Covecube Inc.'
+      InstallerVersion='200'
+      Languages='1033'
+      Compressed='yes'
+      SummaryCodepage='1252' />
+
+    <Media
+      Id='1'
+      Cabinet='StableBit.DrivePool.Balancing.Plugin.Server.cab'
+      EmbedCab='yes'
+      DiskPrompt="CD-ROM #1" />
+
+    <Property Id='DiskPrompt' Value="Addins Installation [1]" />
+
+    <Property Id="DRIVEPOOLDIR">
+      <RegistrySearch Id='DrivePoolInstallLocationSearch' Type='raw'
+                      Root='HKLM' Key='SOFTWARE\StableBit\DrivePool' Name='InstallLocation' 
+                      Win64='yes' />
+    </Property>
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='PluginsDir' Name='Plugins'>
+        <Directory Id="BalancingDir" Name="Balancing">
+          <Directory Id="ProductCodeDir" Name="$(var.ProductCode)">
+            <Component
+              Id='DrivePoolBalancingPluginComponent'
+              Guid='5C964C79-E5CF-4D10-8EB9-36EAB33EFB4A'
+              Win64='yes'>
+
+              <File
+                    Id='$(var.AssemblyName)'
+                    Name='$(var.AssemblyName).dll'
+                    DiskId='1'
+                    Source='..\BalancingPlugin\bin\$(var.Configuration)\$(var.AssemblyName).dll'
+                    ProcessorArchitecture='x64'
+                    KeyPath='yes'
+                    Checksum='yes'>
+              </File>
+
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <CustomAction Id="FixReinstallMode" Property="REINSTALLMODE" Value="vamus" />
+    
+    <CustomAction Id="NoDrivePoolFound" Error="StableBit DrivePool needs to be installed before installing this plug-in." />
+    <CustomAction Id="SetTargetDir" Property="TARGETDIR" Value="[DRIVEPOOLDIR]" />
+    
+    <Feature Id='Complete' Level='1'>
+      <ComponentRef Id='DrivePoolBalancingPluginComponent' />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <!-- Force all files to be copied on upgrade -->
+      <Custom Action='FixReinstallMode' Before='LaunchConditions'>REINSTALL="ALL"</Custom>
+
+      <!-- If we're not removing and there's no DrivePool installation, do not continue. -->
+      <Custom Action='NoDrivePoolFound' After='AppSearch'>(NOT REMOVE="ALL") AND (NOT DRIVEPOOLDIR)</Custom>
+      
+      <!-- Set our installation target directory to where DrivePool is installed. -->
+      <Custom Action='SetTargetDir' After='AppSearch'>NOT REMOVE="ALL"</Custom>
+      
+    </InstallExecuteSequence>
+
+    <Property Id='MSIRESTARTMANAGERCONTROL' Value='Disable' />
+
+  </Product>
+
+</Wix>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/WindowsServerSolutions/2010/03/Addins" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+   <Id>a2070e10-80f0-4eaf-b97b-56f4eab6a8f1</Id>
+   <Version>1.0.1</Version>
+   <Name>StableBit DrivePool Plug-in - BALANCER-NAME-HERE</Name>
+   <Allow32BitOn64BitClients>false</Allow32BitOn64BitClients>
+   <ServerBinary>
+      <File>
+         <ProductCode>42eb56a9-d2dc-4653-813f-c4f81bd9b30c</ProductCode>
+         <Version>1.0.1</Version>
+         <Name>Server.Setup.msi</Name>
+         <Filter>
+            <Language>en-US</Language>
+            <IsLanguageFallback>true</IsLanguageFallback>
+         </Filter>
+      </File>
+   </ServerBinary>
+</Package>

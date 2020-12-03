@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension"
+     xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension">
+
+    <?define Name="All In One" ?>
+    <!-- Example: Disk Space Equalizer -->
+    
+    <?define AssemblyName="CJManca.AllInOnePlugin" ?>
+    <!-- Format:  JaneDoe.DiskSpaceEqualizerPlugin -->
+    
+    <?define Manufacturer="C.J. Manca" ?>
+    <!-- Example: Jane Doe -->
+    
+    <?define ProductVersion="1.0.1" ?>
+    <?define ProductDir="42eb56a9-d2dc-4653-813f-c4f81bd9b30c" ?>
+    <?define ProductCode="*" ?>
+    <?define UpgradeCode="09fe7e1c-c667-496f-acbb-a24126b77df3" ?>
+
+    <?if $(sys.BUILDARCH) = x64 ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?else ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?endif ?>
+
+    <Product
+          Name='StableBit DrivePool Plug-in - $(var.Name)'
+          Id='$(var.ProductCode)'
+          UpgradeCode='$(var.UpgradeCode)'
+          Language='1033'
+          Codepage='1252'
+          Version='$(var.ProductVersion)'
+          Manufacturer='$(var.Manufacturer)'>
+
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+        <MediaTemplate EmbedCab="yes" />
+
+        <Icon Id="DrivePool.ico" SourceFile="..\Assets\drive_pool_logo3.ico" />
+
+        <Property Id="ARPPRODUCTICON" Value="DrivePool.ico" />
+
+        <Property Id='ARPCOMMENTS'>A balancing plug-in for StableBit DrivePool</Property>
+
+        <!-- No modify button in add / remove -->
+        <Property Id='ARPNOMODIFY'>1</Property>
+
+        <Property Id="DRIVEPOOLDIR">
+            <RegistrySearch Id='DrivePoolInstallLocationSearch' Type='raw'
+                            Root='HKLM' Key='SOFTWARE\StableBit\DrivePool' Name='InstallLocation' />
+        </Property>
+        
+        <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
+        <Upgrade Id="$(var.UpgradeCode)">
+            <UpgradeVersion
+               Minimum="1.0.0.0" Maximum="99.0.0.0"
+               Property="PREVIOUSVERSIONSINSTALLED"
+               IncludeMinimum="yes" IncludeMaximum="no" />
+        </Upgrade>
+
+        <Directory Id='TARGETDIR' Name='SourceDir'>
+            <Directory Id='PluginsDir' Name='Plugins'>
+                <Directory Id="BalancingDir" Name="Balancing">
+                    <Directory Id="ProductCodeDir" Name="$(var.ProductDir)">
+                        <Component
+                          Id='DrivePoolBalancingPluginComponent'
+                          Guid='029003FE-75EE-467E-AE6A-61637DFAFFA6'>
+
+                            <File
+                                  Id='$(var.AssemblyName)'
+                                  Name='$(var.AssemblyName).dll'
+                                  DiskId='1'
+                                  Source='..\BalancingPlugin\bin\$(var.Configuration)\$(var.AssemblyName).dll'
+                                  ProcessorArchitecture='x64'
+                                  KeyPath='yes'
+                                  Checksum='yes'>
+                            </File>
+
+                        </Component>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </Directory>
+
+        <CustomAction Id="NoDrivePoolFound" Error="StableBit DrivePool 2.X needs to be installed before installing this plug-in." />
+        <CustomAction Id="SetTargetDir" Property="TARGETDIR" Value="[DRIVEPOOLDIR]" />
+
+        <Feature Id='Complete' Level='1'>
+            <ComponentRef Id='DrivePoolBalancingPluginComponent' />
+        </Feature>
+
+        <InstallExecuteSequence>
+            <RemoveExistingProducts Before="InstallInitialize" />
+
+            <!-- If we're not removing and there's no DrivePool installation, do not continue. -->
+            <Custom Action='NoDrivePoolFound' After='AppSearch'>(NOT REMOVE="ALL") AND (NOT DRIVEPOOLDIR)</Custom>
+
+            <!-- Set our installation target directory to where DrivePool is installed. -->
+            <Custom Action='SetTargetDir' After='AppSearch'>NOT REMOVE="ALL"</Custom>
+
+        </InstallExecuteSequence>
+
+    </Product>
+
+</Wix>

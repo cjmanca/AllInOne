@@ -1,0 +1,10 @@
+.Set CompressionType=LZX
+.Set Compress=on
+.Set CompressionMemory=21
+.Set Cabinet=ON
+.Set MaxDiskSize=0
+.Set MaxCabinetSize=0
+.Set CabinetName1=..\DrivePool.AllInOnePlugin.Setup_1.0.0.1.wssx
+
+..\AddIn.xml
+Server.Setup.msi
