@@ -136,7 +136,7 @@ namespace AllInOnePlugin
                 {
                     return false;
                 }
-                return this._orderedPlacement && this._drives.Any<DriveState>((DriveState d) => d.IsFeeder);
+                return this._orderedPlacement; // && this._drives.Any<DriveState>((DriveState d) => d.IsFeeder);
             }
             set
             {
@@ -148,7 +148,7 @@ namespace AllInOnePlugin
         {
             get
             {
-                return this._freePlacement || (this._orderedPlacement && !OrderedPlacement);
+                return this._freePlacement; // || (this._orderedPlacement && !OrderedPlacement);
             }
             set
             {

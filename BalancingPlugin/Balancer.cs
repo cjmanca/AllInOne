@@ -46,7 +46,7 @@ namespace AllInOnePlugin
         {
             get 
             {
-                return "Combines several of the official plugins so they actually work together (as they should have in the first place).";
+                return "Combines several of the official plugins so they work together without fighting each other.";
             }
         }
 

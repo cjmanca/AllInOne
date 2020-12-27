@@ -14,7 +14,7 @@
     <?define Manufacturer="C.J. Manca" ?>
     <!-- Example: Jane Doe -->
     
-    <?define ProductVersion="1.0.1" ?>
+    <?define ProductVersion="1.0.0.2" ?>
     <?define ProductDir="42eb56a9-d2dc-4653-813f-c4f81bd9b30c" ?>
     <?define ProductCode="*" ?>
     <?define UpgradeCode="09fe7e1c-c667-496f-acbb-a24126b77df3" ?>
